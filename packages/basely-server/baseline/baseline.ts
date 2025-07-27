@@ -18,14 +18,30 @@ export async function baseline(
         toolGroups: JSON.parse(tgParam),
     }
 
+    const fontParam = url.searchParams.get("font") ?? "";
+    const cssParam = url.searchParams.get("css") ?? "";
     // 3) rebuild your outgoing query
     const out = new URLSearchParams();
     out.append("pkg", pkg);
     out.append("component", component);
     out.append("props", JSON.stringify(props));
+    // TODO in the future better api
+    if (!fontParam) {
+        out.append("font", "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+    }
+    if (!cssParam) {
+        out.append("css", `${import.meta.env.IMPORT_URL}/@xyd-js/components/dist/index.css`);
+        out.append("css", `
+            html {
+                font-family: "Inter", sans-serif;
+                font-optical-sizing: auto;
+                font-weight: 400;
+                font-style: normal;
+            }    
+        `);
+    }
 
     const renderUrl = `${process.env.SERVER_URL}/render?${out.toString()}`;
-    console.log("fetching render with:", renderUrl);
     const res = await fetch(renderUrl);
     return res;
 }

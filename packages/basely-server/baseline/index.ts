@@ -9,23 +9,22 @@ export function route(
 ): Route {
     return async function (url: URL, req: Request): Promise<Response | undefined> {
         switch (url.pathname) {
-            case "/components.css": {
-                let styleUrl: string = ""
-                let isFile = true;
+            // case "/components.css": {
+            //     let styleUrl: string = ""
+            //     let isFile = true;
 
-                const modUrl = "http://0.0.0.0:4444/@xyd-js/components/dist/index.css";
-                try {
-                    const { default: styles } = await import(modUrl);
+            //     const modUrl = `${import.meta.env.IMPORT_URL}/@xyd-js/components/dist/index.css`;
+            //     try {
+            //         const { default: styles } = await import(modUrl);
 
-                    styleUrl = styles;
-                } catch (e) {
-                    styleUrl = modUrl;
-                    isFile = false;
-                }
+            //         styleUrl = styles;
+            //     } catch (e) {
+            //         styleUrl = modUrl;
+            //         isFile = false;
+            //     }
 
-
-                return serve.css(styleUrl, isFile);
-            }
+            //     return serve.css(styleUrl, isFile);
+            // }
 
             case "/baseline.png": {
                 return baseline(url, req, browser);

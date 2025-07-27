@@ -26,7 +26,7 @@ http://localhost:3000/baseline.png?title=Node.js%20Support&toolGroups=[[{%22tool
 ```
 
 2.
-http://localhost:3000/render?pkg=http://localhost:4444/@xyd-js/components/system&component=Baseline&props={"title":"Node.js Support","toolGroups":[[{"tool":"bun","supported":0},{"tool":"pnpm","supported":0},{"tool":"npm","supported":0}]]}
+http://localhost:3000/render?pkg=http://localhost:3344/@xyd-js/components/system&component=Baseline&props={"title":"Node.js Support","toolGroups":[[{"tool":"bun","supported":0},{"tool":"pnpm","supported":0},{"tool":"npm","supported":0}]]}
 
 3.
 ```
@@ -70,5 +70,3 @@ bun run start
 The server will start on port 3000. 
 
 
-
-http://localhost:3000/render?pkg=http://localhost:4444/@xyd-js/components/system&component=SearchButton&props={%22title%22:%22Node.js%20Support%22,%22toolGroups%22:[[{%22tool%22:%22bun%22,%22supported%22:0},{%22tool%22:%22pnpm%22,%22supported%22:0},{%22tool%22:%22npm%22,%22supported%22:0}]]}

@@ -17,14 +17,14 @@ export function route(
             return undefined;
         }
 
-        const { pkg, component, render, props } = await parseRenderParams(url.search);
+        const { pkg, component, render, font, css, props } = await parseRenderParams(url.search);
 
         const mod = await import(pkg);
         const Component = renderComponent(mod[component || "default"]);
 
         // Direct React render when requested
         if (render) {
-            return serve.react(<Component {...props} />);
+            return serve.react(<Component {...props} font={font} css={css} />);
         }
 
         // Puppeteer screenshot path
@@ -68,15 +68,25 @@ export function route(
 }
 
 // Helper to decode and parse query params
-async function parseRenderParams(search: string) {
+async function parseRenderParams(search: string): Promise<{
+    render: boolean;
+    pkg: string;
+    component: string;
+    font: string;
+    css: string[];
+    props: any;
+}> {
     let query = search.startsWith("?") ? search.slice(1) : search;
     try { query = decodeURIComponent(query); } catch { }
 
     const params = new URLSearchParams(query);
     const pkg = params.get("pkg") || "";
     const component = params.get("component") || "";
-    let props: any = params.get("props") || "";
     const render = params.get("render") === "1" || params.get("render") === "true";
+    const font = params.get("font") || "";
+    const css = params.getAll("css") || "";
+
+    let props: any = params.get("props") || "";
 
     // Handle file parameter - fetch and parse content
     const fileUrl = params.get("file");
@@ -108,8 +118,8 @@ async function parseRenderParams(search: string) {
             props = (parsed && typeof parsed === "object") ? parsed : {};
         } catch {
             props = {};
-        }
+        }   
     }
 
-    return { render, pkg, component, props };
+    return { render, pkg, component, font, css, props };
 }

@@ -19,7 +19,7 @@ function load_http_module(href) {
                     .filter(p => p.node.source.value.startsWith('/'))
                     .forEach(p => {
                         const oldVal = p.node.source.value;
-                        p.node.source.value = `http://localhost:4444${oldVal}`;
+                        p.node.source.value = `${import.meta.env.IMPORT_URL}${oldVal}`;
                         hasRewrites = true;
                     });
 
