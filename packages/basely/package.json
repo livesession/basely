@@ -1,0 +1,13 @@
+{
+  "name": "basely",
+  "version": "0.0.0",
+  "main": "index.ts",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  }
+} 

@@ -1,0 +1,11 @@
+[[redirects]]
+  from = "/playground"
+  to = "/"
+  status = 307
+  force = true
+  
+[[redirects]]
+  from = "/docs/"
+  to = "/"
+  status = 307
+  force = true

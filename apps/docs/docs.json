@@ -1,0 +1,82 @@
+{
+    "theme": {
+        "name": "picasso",
+        "logo": {
+            "light": "/public/assets/logo.svg",
+            "dark": "/public/assets/logo-dark.svg"
+        },
+        "seo": {
+            "domain": "basely.dev"
+        },
+        "icons": {
+            "library": [
+                {
+                    "name": "lucide",
+                    "default": true
+                }
+            ]
+        },
+        "appearance": {
+            "colors": {
+                "primary": "#BEFFC4",
+                "light": "#052529"
+            },
+            "cssTokens": {
+                "--xyd-button-primary-color": "var(--color-text)"
+            },
+            "search": false,
+            "header": {
+                "externalArrow": true
+            },
+            "tabs": {
+                "surface": "center"
+            },
+            "logo": {
+                "header": true
+            }
+        }
+    },
+    "components": {
+        "footer": {
+            "kind": "minimal",
+            "social": {
+                "github": "https://github.com/livesession/basely"
+            },
+            "links": [
+                {
+                    "label": "LiveSession OpenSource ®",
+                    "href": "https://github.com/livesession"
+                },
+                {
+                    "label": "xyd.dev",
+                    "href": "https://xyd.dev"
+                }
+            ]
+        }
+    },
+    "navigation": {
+        "tabs": [
+            {
+                "title": "Documentation",
+                "page": "docs"
+            },
+            {
+                "title": "Playground",
+                "page": "playground"
+            }
+        ],
+        "anchors": {
+            "header": [
+                {
+                    "title": "LiveSession",
+                    "href": "https://github.com/livesession/basely"
+                },
+                {
+                    "title": "GitHub",
+                    "href": "https://github.com/livesession/basely",
+                    "social": "github"
+                }
+            ]
+        }
+    }
+}

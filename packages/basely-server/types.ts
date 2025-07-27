@@ -1,0 +1,1 @@
+export type Route = (url: URL, req: Request) => Promise<Response | undefined>;
