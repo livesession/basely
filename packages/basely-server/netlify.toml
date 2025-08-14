@@ -1,0 +1,11 @@
+[build]
+command = "bun build server.tsx --outdir=dist --minify --target=bun"
+publish = "dist"
+
+[functions]
+directory = "netlify/functions"
+
+[[redirects]]
+from = "/*"
+to = "/server.js"
+status = 200
