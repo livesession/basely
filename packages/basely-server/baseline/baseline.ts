@@ -20,11 +20,19 @@ export async function baseline(
 
     const fontParam = url.searchParams.get("font") ?? "";
     const cssParam = url.searchParams.get("css") ?? "";
+    const heightParam = url.searchParams.get("height") ?? "";
+    const widthParam = url.searchParams.get("width") ?? "";
     // 3) rebuild your outgoing query
     const out = new URLSearchParams();
     out.append("pkg", pkg);
     out.append("component", component);
     out.append("props", JSON.stringify(props));
+    if (heightParam) {
+        out.append("height", heightParam)
+    }
+    if (widthParam) {
+        out.append("width", widthParam)
+    }
     // TODO in the future better api
     if (!fontParam) {
         out.append("font", "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");

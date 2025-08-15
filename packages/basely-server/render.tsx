@@ -17,7 +17,7 @@ export function route(
             return undefined;
         }
 
-        const { pkg, component, render, font, css, props } = await parseRenderParams(url.search);
+        const { pkg, component, render, font, css, width, height, props } = await parseRenderParams(url.search);
 
         const mod = await import(pkg);
         const Component = renderComponent(mod[component || "default"]);
@@ -38,8 +38,8 @@ export function route(
         try {
             const page = await browser.newPage();
             await page.setViewport({
-                width: 468,
-                height: 800,
+                width: width || 468,
+                height: height || 800,
                 deviceScaleFactor: 2, // 2x resolution
             });
 
@@ -75,6 +75,8 @@ async function parseRenderParams(search: string): Promise<{
     font: string;
     css: string[];
     props: any;
+    width?: number;
+    height?: number;
 }> {
     let query = search.startsWith("?") ? search.slice(1) : search;
     try { query = decodeURIComponent(query); } catch { }
@@ -85,6 +87,8 @@ async function parseRenderParams(search: string): Promise<{
     const render = params.get("render") === "1" || params.get("render") === "true";
     const font = params.get("font") || "";
     const css = params.getAll("css") || "";
+    const height = params.get("height");
+    const width = params.get("width");
 
     let props: any = params.get("props") || "";
 
@@ -121,5 +125,5 @@ async function parseRenderParams(search: string): Promise<{
         }   
     }
 
-    return { render, pkg, component, font, css, props };
+    return { render, pkg, component, font, css, height: height ? parseInt(height, 10) : undefined, width: width ? parseInt(width, 10) : undefined, props };
 }
