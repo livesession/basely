@@ -39,7 +39,6 @@ export function route(): Route {
                 status: 200,
                 headers: {
                     "Content-Type": assetRes.headers.get("Content-Type") || "application/octet-stream",
-                    "Content-Disposition": `attachment; filename="${assetObj.name}"`
                 }
             });
         }
