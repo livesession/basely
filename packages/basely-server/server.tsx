@@ -6,6 +6,7 @@ import { serve } from "./serve";
 import { router } from "./router";
 import { route as baselineRoute } from "./baseline/index";
 import { route as renderRoute } from "./render";
+import {route as githubRoute } from "./github";
 
 import httpImportPlugin from "./httpImportPlugin";
 import { NotFound } from "./NotFound";
@@ -15,7 +16,8 @@ console.log("[puppeteer] Browser launched");
 
 const match = router(
     baselineRoute(browser),
-    renderRoute(browser)
+    renderRoute(browser),
+    githubRoute(),
 )
 
 Bun.plugin(httpImportPlugin);
