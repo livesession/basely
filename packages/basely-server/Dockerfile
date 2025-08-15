@@ -18,6 +18,6 @@ RUN bun install --no-progress
 # build for Bun runtime
 RUN bun build server.tsx --outdir=dist --minify --target=bun
 
-EXPOSE 3000
+EXPOSE 8080
 # IMPORTANT: your server should read process.env.PORT on platforms like Cloud Run
 CMD ["bun","./dist/server.js"]
