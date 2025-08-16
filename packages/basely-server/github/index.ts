@@ -34,13 +34,40 @@ export function route(): Route {
             if (!assetRes.ok) {
                 return new Response("Failed to download asset", { status: 502 });
             }
-            // Stream the asset response
+
+            const contentType = getMimeType(assetObj.name, assetRes.headers.get("Content-Type") || "application/octet-stream");
+
             return new Response(assetRes.body, {
                 status: 200,
                 headers: {
-                    "Content-Type": assetRes.headers.get("Content-Type") || "application/octet-stream",
+                    "Content-Type": contentType,
                 }
             });
         }
     }
+}
+
+const extensionToMime: Record<string, string> = {
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".gif": "image/gif",
+    ".webp": "image/webp",
+    ".svg": "image/svg+xml",
+    ".bmp": "image/bmp",
+    ".ico": "image/x-icon",
+    ".pdf": "application/pdf",
+    ".zip": "application/zip",
+    ".tar": "application/x-tar",
+    ".gz": "application/gzip",
+    ".mp4": "video/mp4",
+    ".mp3": "audio/mpeg",
+    ".wav": "audio/wav",
+    ".txt": "text/plain",
+    ".json": "application/json"
+};
+
+function getMimeType(filename: string, fallback: string) {
+    const ext = Object.keys(extensionToMime).find(e => filename.endsWith(e));
+    return ext ? extensionToMime[ext] : fallback;
 }
