@@ -1,8 +1,9 @@
 import path from "node:path";
 
 import * as React from "react";
-import { useMemo, useContext, ReactElement, SVGProps } from "react";
-import { redirect, ScrollRestoration, useLocation } from "react-router";
+import { jsx, jsxs } from "react/jsx-runtime";
+import { useMemo, useContext, ReactElement, SVGProps, useEffect } from "react";
+import { redirect, ScrollRestoration, useLocation, useNavigation } from "react-router";
 
 import { MetadataMap, Metadata, Settings } from "@xyd-js/core"
 import { ContentFS } from "@xyd-js/content"
@@ -11,6 +12,7 @@ import { pageMetaLayout } from "@xyd-js/framework";
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
 import { FrameworkPage, type FwSidebarItemProps } from "@xyd-js/framework/react";
 import type { IBreadcrumb, INavLinks } from "@xyd-js/ui";
+import { UXNode } from "openux-js";
 
 // @ts-ignore
 import virtualSettings from "virtual:xyd-settings";
@@ -19,6 +21,7 @@ const { settings } = virtualSettings as Settings
 
 import { PageContext } from "./context";
 import { SUPPORTED_META_TAGS } from "./metatags";
+import { useAnalytics } from "@xyd-js/analytics";
 
 function getPathname(url: string) {
     const parsedUrl = new URL(url);
@@ -34,6 +37,7 @@ interface loaderData {
     metadata: Metadata | null
     rawPage: string // TODO: in the future routing like /docs/quickstart.md but some issues with react-router like *.md in `route` config
     navlinks?: INavLinks,
+    editLink?: string,
 }
 
 class timedebugLoader {
@@ -106,14 +110,9 @@ export async function loader({ request }: { request: any }) {
     timedebug.mapSettingsToPropsEnd
 
     function redirectFallback() {
-        if (!sidebarGroups) {
-            return
-        }
-        const firstItem = findFirstUrl(sidebarGroups?.[0]?.items);
+        const fallbackUrl = findFallbackUrl(sidebarGroups, slug)
 
-        if (firstItem) {
-            return redirect(firstItem)
-        }
+        return redirect(fallbackUrl)
     }
 
     if (hiddenPages?.[slug]) {
@@ -127,11 +126,11 @@ export async function loader({ request }: { request: any }) {
     let code = ""
     let rawPage = ""
 
-    const mdPlugins = markdownPlugins({
+    const mdPlugins = await markdownPlugins({
         maxDepth: metadata?.maxTocDepth || settings?.theme?.writer?.maxTocDepth || 2,
     }, settings)
 
-    const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins)
+    const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins, mdPlugins.recmaPlugins)
 
     const pagePath = globalThis.__xydPagePathMapping[slug]
     if (pagePath) {
@@ -153,6 +152,10 @@ export async function loader({ request }: { request: any }) {
         metadata.layout = pageMetaLayout(metadata)
     }
 
+    let editLink = settings?.integrations?.editLink?.baseUrl ?
+        path.join(settings?.integrations?.editLink?.baseUrl || "", pagePath) :
+        undefined
+
     return {
         sidebarGroups,
         breadcrumbs,
@@ -161,6 +164,7 @@ export async function loader({ request }: { request: any }) {
         code,
         metadata,
         rawPage,
+        editLink,
     } as loaderData
 }
 
@@ -259,6 +263,36 @@ function findFirstUrl(items: any = []): string {
     return "";
 }
 
+function findFallbackUrl(sidebarGroups: FwSidebarItemProps[], currentSlug: string): string {
+    if (!sidebarGroups || sidebarGroups.length === 0) {
+        throw new Error("No sidebar groups available for fallback redirect")
+    }
+
+    // Iterate through all sidebar groups to find the first valid URL
+    for (const group of sidebarGroups) {
+        if (!group.items || group.items.length === 0) {
+            continue
+        }
+
+        const firstItem = findFirstUrl(group.items)
+
+        if (!firstItem) {
+            continue
+        }
+
+        // Avoid infinite redirects by checking if the found URL is the same as current slug
+        if (sanitizeUrl(firstItem) === sanitizeUrl(currentSlug)) {
+            console.log("Avoiding infinite redirect: found URL matches current slug", firstItem, currentSlug)
+            continue
+        }
+
+        return firstItem
+    }
+
+    // If we get here, no valid URL was found in any sidebar group
+    throw new Error(`No valid fallback URL found for slug: ${currentSlug}.`)
+}
+
 const createElementWithKeys = (type: any, props: any) => {
     // Process children to add keys to all elements
     const processChildren = (childrenArray: any[]): any[] => {
@@ -300,7 +334,7 @@ const createElementWithKeys = (type: any, props: any) => {
 };
 
 // TODO: move to content?
-function mdxExport(code: string) {
+function mdxExport(code: string, themeContentComponents: any, themeFileComponents: any, globalAPI: any) {
     // Create a wrapper around React.createElement that adds keys to elements in lists
     const scope = {
         Fragment: React.Fragment,
@@ -308,14 +342,20 @@ function mdxExport(code: string) {
         jsx: createElementWithKeys,
         jsxDEV: createElementWithKeys,
     }
-    const fn = new Function(...Object.keys(scope), code)
 
-    return fn(scope)
+    const global = {
+        ...themeContentComponents,
+        React,
+    }
+
+    const fn = new Function("_$scope", ...Object.keys(global), "fileComponents", ...Object.keys(globalAPI || {}), code);
+
+    return fn(scope, ...Object.values(global), themeFileComponents, ...Object.values(globalAPI));
 }
 
 // // TODO: move to content?
-function mdxContent(code: string) {
-    const content = mdxExport(code) // TODO: fix any
+function mdxContent(code: string, themeContentComponents: any, themeFileComponents: any, globalAPI: any) {
+    const content = mdxExport(code, themeContentComponents, themeFileComponents, globalAPI) // TODO: fix any
     if (!mdxExport) {
         return {}
     }
@@ -344,31 +384,87 @@ export function MemoMDXComponent(codeComponent: any) {
 
 export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
     const location = useLocation()
+    const navigation = useNavigation()
+
+    const analytics = useAnalytics()
 
     const { theme } = useContext(PageContext)
     if (!theme) {
         throw new Error("BaseTheme not found")
     }
 
-    const content = mdxContent(loaderData.code)
-    const Content = MemoMDXComponent(content.component)
+    // Dispatch custom event when location changes
+    useEffect(() => {
+        const event = new CustomEvent('xyd::pathnameChange', {
+            detail: {
+                pathname: location.pathname,
+            }
+        });
+
+        window.dispatchEvent(event);
+    }, [location.pathname]);
 
     const themeContentComponents = theme.reactContentComponents()
+    const themeFileComponents = theme.reactFileComponents()
+    const globalAPI = {
+        analytics,
+    }
+
+    const createContent = (fileComponents) => {
+        return mdxContent(loaderData.code, themeContentComponents, fileComponents ? themeFileComponents : undefined, globalAPI)
+    }
+
+    const content = createContent(true)
+    const Content = MemoMDXComponent(content.component)
+
+    const contentOriginal = createContent(false)
+    const ContentOriginal = MemoMDXComponent(contentOriginal.component)
+
     const { Page } = theme
 
-    return <FrameworkPage
-        key={location.pathname}
-        metadata={content.metadata}
-        breadcrumbs={loaderData.breadcrumbs}
-        rawPage={loaderData.rawPage}
-        toc={content.toc || []}
-        navlinks={loaderData.navlinks}
-        ContentComponent={Content}
-    >
-        <Page>
-            <Content components={themeContentComponents} />
-            <ScrollRestoration />
-        </Page>
-    </FrameworkPage>
+    return <>
+        <UXNode
+            name="Framework"
+            props={{
+                location: location.pathname + location.search + location.hash,
+            }}
+        >
+            <FrameworkPage
+                key={location.pathname}
+                metadata={content.metadata}
+                breadcrumbs={loaderData.breadcrumbs}
+                rawPage={loaderData.rawPage}
+                toc={content.toc || []}
+                navlinks={loaderData.navlinks}
+                ContentComponent={Content}
+                ContentOriginal={ContentOriginal}
+                editLink={loaderData.editLink}
+            >
+                <Page>
+                    <ContentOriginal components={{
+                        ...themeContentComponents,
+                        wrapper: (props) => {
+                            // TODO: in the future delete uxnod
+                            return <UXNode
+                                name=".ContentPage"
+                                props={{}}
+                            >
+                                {props.children}
+                            </UXNode>
+                        }
+                    }} />
+                    <ScrollRestoration />
+                </Page>
+            </FrameworkPage>
+        </UXNode>
+    </>
 }
 
+
+function sanitizeUrl(url: string) {
+    if (url.startsWith("/")) {
+        return url
+    }
+
+    return `/${url}`
+}

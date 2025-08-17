@@ -1,6 +1,7 @@
 {
     "theme": {
         "name": "picasso",
+        "favicon": "/public/assets/logo.svg",
         "logo": {
             "light": "/public/assets/logo.svg",
             "dark": "/public/assets/logo-dark.svg"

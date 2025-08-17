@@ -2,8 +2,8 @@
 component: firstslide
 componentProps:
     content:
-        title: Basely - Remote Components Rendering Library
-        description: Basely is a free, open-source library that lets you render UI components as images—anywhere, instantly. Transform your React components into shareable, high-quality images for reports, social media, dashboards, and more. No more manual screenshots—just code, render, and share.
+        title: Basely - Content Creation Platform for Developers
+        description: Basely is a free, open-source content creation platform for developers. Turn components into images/videos, and more to make developer process more engaging.
         primaryButton: 
             title: Install basely (coming soon)
             href: https://basely.dev
@@ -31,19 +31,25 @@ componentProps:
         await slack.post(last7DaysMetrics)
         ```
 
-        ```tsx Developer Badge
+        ```tsx Developer Badges
         import basely from 'basely'
 
-        const data = basely.badge.baseline.download(
-            github.release("livesession/xyd")
-        )
+        const data = [[{tool: "bun", supported: tue}]]
 
-        const nodejsBaseline = await basely.img.baseline(
-            "Node.js Support", 
-            data,
-        )
+        const nodejsBaseline = await basely.badge.baseline
+            .githubRelease("livesession/xyd", "0.1.0")
+            .img("Node.js Support", data, "node-support.png")
 
-        await github.readme(nodejsBaseline)
+        const nodeSupportImgSrc = await basely
+            .githubRelease("livesession/xyd")
+            .asset("node-support.png")
+            .download()
+
+        const README = `
+            # Your Awesome Tool
+
+            <img src="${nodeSupportImgSrc}"/>
+        `
         ```
 
         ```tsx Your Own Components

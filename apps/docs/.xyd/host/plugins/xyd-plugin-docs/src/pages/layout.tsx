@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import {
     Outlet,
     useLoaderData,
@@ -7,6 +7,8 @@ import {
     useNavigation,
     useMatches
 } from "react-router";
+
+import { UXNode } from "openux-js";
 
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
 
@@ -19,14 +21,14 @@ import AtlasXydPlugin from "@xyd-js/atlas/xydPlugin";
 
 import { Surfaces, pageMetaLayout } from "@xyd-js/framework";
 import { Composer } from "@xyd-js/composer";
-import { XYDAnalytics } from "@xyd-js/analytics";
+import { Analytics, useAnalytics } from "@xyd-js/analytics";
 // @ts-ignore
 import { iconSet } from 'virtual:xyd-icon-set';
 
 // @ts-ignore
 import virtualSettings from "virtual:xyd-settings";
 // @ts-ignore
-const { settings: getSettings, settingsClone } = virtualSettings
+const { settings: getSettings, settingsClone, userPreferences } = virtualSettings
 
 // const settings = globalThis.__xydSettings
 import Theme from "virtual:xyd-theme";
@@ -36,6 +38,7 @@ import { loadProvider } from 'virtual:xyd-analytics-providers'
 // @ts-ignore
 import "virtual:xyd-theme/index.css"
 import "virtual:xyd-theme-override/index.css"
+import 'katex/dist/katex.min.css'
 
 // @ts-ignore
 import { components as userComponents } from 'virtual:xyd-user-components';
@@ -52,6 +55,7 @@ import { SearchButton } from "@xyd-js/components/system"
 globalThis.__xydSettings = getSettings
 globalThis.__xydSettingsClone = settingsClone
 globalThis.__xydUserComponents = userComponents // Add user components to global scope TODO: problematic
+globalThis.__xydUserPreferences = userPreferences
 
 const settings = globalThis.__xydSettings as Settings
 
@@ -112,6 +116,8 @@ interface LoaderData {
 }
 
 export async function loader({ request }: { request: any }) {
+    globalThis.__xydFrontmatterNotExists = {}
+
     new Composer() // TODO: better API
 
     const slug = getPathname(request.url || "index") || "index"
@@ -129,10 +135,10 @@ export async function loader({ request }: { request: any }) {
 
     let bannerContentCode = ""
 
-    const mdPlugins = markdownPlugins({
+    const mdPlugins = await markdownPlugins({
         maxDepth: metadata?.maxTocDepth || settings?.theme?.writer?.maxTocDepth || 2,
     }, settings)
-    const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins)
+    const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins, mdPlugins.recmaPlugins)
 
     if (settings?.components?.banner?.content && typeof settings?.components?.banner?.content === "string") {
         bannerContentCode = await contentFs.compileContent(
@@ -193,41 +199,64 @@ export default function Layout() {
     }, {});
 
     return <>
-        <XYDAnalytics settings={settings} loader={loadProvider}>
+        <Analytics settings={settings} loader={loadProvider}>
             <IconProvider value={{
                 iconSet: iconSet
             }}>
-                <Framework
-                    settings={settings || globalThis.__xydSettings}
-                    sidebarGroups={loaderData.sidebarGroups || []}
-                    metadata={loaderData.metadata || {}}
-                    surfaces={surfaces}
-                    BannerContent={bannerContent}
-                    components={{
-                        Search: SearchButton,
-                        Logo: FwLogo,
-                        ...userComponents
+                {/* TOOD: better solution for roto ux node cuz for example in user components then its not defined but neede to use analyitcs hooks (but should be optional?) */}
+                <UXNode
+                    name="Framework"
+                    props={{
+                        location: "",
                     }}
                 >
-                    <AtlasContext
-                        value={{
-                            syntaxHighlight: settings?.theme?.coder?.syntaxHighlight || null,
-                            baseMatch: lastMatchId || "",
-                            variantToggles: atlasVariantToggles
+                    <Framework
+                        settings={settings || globalThis.__xydSettings}
+                        sidebarGroups={loaderData.sidebarGroups || []}
+                        metadata={loaderData.metadata || {}}
+                        surfaces={surfaces}
+                        BannerContent={bannerContent}
+                        components={{
+                            Search: SearchButton,
+                            Logo: FwLogo,
+                            ...userComponents
                         }}
                     >
-                        <CoderProvider lines={settings?.theme?.coder?.lines} scroll={settings?.theme?.coder?.scroll}>
-                            <BaseThemeLayout>
-                                <PageContext value={{ theme }}>
-                                    <Outlet />
-                                </PageContext>
-                            </BaseThemeLayout>
-                        </CoderProvider>
-                    </AtlasContext>
-                </Framework>
+                        <AtlasContext
+                            value={{
+                                Link: FwLink,
+                                syntaxHighlight: settings?.theme?.coder?.syntaxHighlight || null,
+                                baseMatch: lastMatchId || "",
+                                variantToggles: atlasVariantToggles
+                            }}
+                        >
+                            <CoderProvider lines={settings?.theme?.coder?.lines} scroll={settings?.theme?.coder?.scroll}>
+                                <BaseThemeLayout>
+                                    <PageContext value={{ theme }}>
+                                        <PostLayout>
+                                            <Outlet />
+                                        </PostLayout>
+                                    </PageContext>
+                                </BaseThemeLayout>
+                            </CoderProvider>
+                        </AtlasContext>
+                    </Framework>
+                </UXNode>
+
             </IconProvider>
-        </XYDAnalytics>
+        </Analytics>
     </>
+}
+
+function PostLayout({ children }: { children: React.ReactNode }) {
+    const analytics = useAnalytics()
+    
+    useEffect(() => {
+        // @ts-ignore
+        window.analytics = analytics
+    }, [])
+
+    return children
 }
 
 function getPathname(url: string) {
