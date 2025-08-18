@@ -25,7 +25,7 @@ paths:
     get:
       summary: Generate baseline PNG image
       description: |
-        Generates a baseline PNG image using the [Baseline component](/docs/components/baseline) with customizable parameters.
+        Generates a baseline PNG image using the [Baseline component](https://components.basely.dev/?path=/docs/components-baseline--docs) with customizable parameters.
         The generated image can be customized with various props.
       parameters:
         - name: title

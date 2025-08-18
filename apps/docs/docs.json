@@ -61,13 +61,17 @@
             {
                 "title": "API Reference",
                 "page": "docs/api-reference"
+            },
+            {
+                "title": "Playground",
+                "href": "https://components.basely.dev"
             }
         ],
         "anchors": {
             "header": [
                 {
                     "title": "LiveSession",
-                    "href": "https://github.com/livesession/basely"
+                    "href": "https://livesession.io"
                 },
                 {
                     "title": "GitHub",

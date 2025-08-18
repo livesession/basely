@@ -59,7 +59,7 @@ The **Basely Client** is a JavaScript library that provides an interface for:
 
     // Render custom content
     const response = await basely.img(
-      "@xyd-js/components/system",
+      "@basely/components",
       {
         import: "Baseline",
         props: {

@@ -49,8 +49,18 @@ npm install basely
 import basely from 'basely';
 
 // Generate a baseline image
-const response = await basely.img.baseline("Node.js Support");
-const imageBuffer = await response.arrayBuffer();
+const response = await basely.img.baseline(
+  "Node.js Support",
+  [
+    [
+      { "tool": "bun", "supported": true },
+      { "tool": "pnpm", "supported": true },
+      { "tool": "npm", "supported": true }
+    ]
+  ]
+)
+
+--
 
 // Render a custom component
 const response = await basely.img(
