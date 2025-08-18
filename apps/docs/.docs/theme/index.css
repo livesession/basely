@@ -1,4 +1,13 @@
-[part=logo] img {
-    width: auto;
-    height: auto;
+xyd-layout-primary {
+    [part=logo] img {
+        width: auto;
+        height: auto;
+    }
+
+    /* TODO: in the future xyd should support that */
+    &:not([data-layout="page"]) {
+        xyd-nav [part=logo] img {
+            display: none;
+        }
+    }
 }

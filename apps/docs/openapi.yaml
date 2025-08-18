@@ -1,0 +1,321 @@
+openapi: 3.0.3
+info:
+  title: Basely Server API
+  description: |
+    A server for generating baseline PNG images, rendering React components, and serving GitHub assets.
+    
+    The API provides endpoints for:
+    - Generating baseline PNG images with customizable parameters
+    - Rendering React components as HTML or PNG screenshots
+    - Downloading assets from GitHub releases
+    - Serving static files
+  version: 0.0.0
+  contact:
+    name: Basely Server
+servers:
+  - url: https://api.basely.dev
+    description: Production server
+
+x-docs:
+  codeLanguages:
+    - shell
+
+paths:
+  /baseline.png:
+    get:
+      summary: Generate baseline PNG image
+      description: |
+        Generates a baseline PNG image using the [Baseline component](/docs/components/baseline) with customizable parameters.
+        The generated image can be customized with various props.
+      parameters:
+        - name: title
+          in: query
+          description: Title text for the baseline image
+          required: true
+          schema:
+            type: string
+        - name: toolGroups
+          in: query
+          description: JSON array of [tool groups](/docs/api-reference/objects/Tool) configuration
+          required: true
+          schema:
+            type: array
+            $ref: '#/components/schemas/Tool'
+            example: |
+              [
+                [
+                  {"tool":"bun","supported":true},
+                  {"tool":"node","supported":true,"label":"20.x"},
+                  {"tool":"pnpm","supported":true,"label":"9.x"}
+                ]
+              ]
+        - name: font
+          in: query
+          description: Custom font URL (CSS)
+          required: false
+          schema:
+            type: string
+            example: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        - name: css
+          in: query
+          description: Custom CSS styles
+          required: false
+          schema:
+            type: string
+        - name: height
+          in: query
+          description: Image height in pixels
+          required: false
+          schema:
+            type: integer
+            default: 800
+            minimum: 1
+        - name: width
+          in: query
+          description: Image width in pixels
+          required: false
+          schema:
+            type: integer
+            default: 468
+            minimum: 1
+      responses:
+        '200':
+          description: PNG image generated successfully
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Invalid parameters
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /render:
+    get:
+      summary: Render React component
+      description: |
+        Renders a React component as HTML or generates a PNG screenshot.
+        Supports dynamic component loading and customizable rendering parameters.
+      parameters:
+        - name: pkg
+          in: query
+          description: Package/module URL to import the component from
+          required: true
+          schema:
+            type: string
+            example: "https://esm.sh/@xyd-js/components/system"
+        - name: component
+          in: query
+          description: Component name to render 
+          required: true
+          schema:
+            type: string
+            example: "Baseline"
+        - name: props
+          in: query
+          description: JSON string of props to pass to the component
+          required: false
+          schema:
+            type: string
+            example: |
+              {
+                "title": "Node.js Support",
+                "toolGroups": [
+                  [
+                    {"tool":"bun","supported":true},
+                    {"tool":"pnpm","supported":true},
+                    {"tool":"npm","supported":true}
+                  ]
+                ]
+              }
+        - name: file
+          in: query
+          description: URL to a JSON file containing props
+          required: false
+          schema:
+            type: string
+            format: uri
+        - name: render
+          in: query
+          description: Set to "1" or "true" to return HTML instead of PNG
+          required: false
+          schema:
+            type: string
+            enum: ["1", "true"]
+        - name: font
+          in: query
+          description: Custom font URL (CSS)
+          required: false
+          schema:
+            type: string
+        - name: css
+          in: query
+          description: Custom CSS styles (can be specified multiple times)
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: height
+          in: query
+          description: Viewport height for screenshot
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 800
+        - name: width
+          in: query
+          description: Viewport width for screenshot
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 468
+      responses:
+        '200':
+          description: Component rendered successfully
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+              description: PNG screenshot (when render parameter is not set)
+            text/html:
+              schema:
+                type: string
+              description: HTML output (when render parameter is set)
+        '400':
+          description: Invalid parameters
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: Screenshot generation failed
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /github/download/releases/{owner}/{repo}:
+    get:
+      summary: Download GitHub release asset
+      description: |
+        Downloads a specific asset from a GitHub repository release.
+        Supports latest release or specific tag-based releases.
+      parameters:
+        - name: owner
+          in: path
+          description: GitHub repository owner
+          required: true
+          schema:
+            type: string
+            example: "livesession"
+        - name: repo
+          in: path
+          description: GitHub repository name
+          required: true
+          schema:
+            type: string
+            example: "xyd"
+        - name: tag
+          in: query
+          description: Release tag (use "latest" for the latest release)
+          required: false
+          schema:
+            type: string
+            default: "latest"
+            example: "v1.0.0"
+        - name: asset
+          in: query
+          description: Name of the asset file to download
+          required: true
+          schema:
+            type: string
+            example: "node-support-baseline.png"
+      responses:
+        '200':
+          description: Asset downloaded successfully
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            application/zip:
+              schema:
+                type: string
+                format: binary
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Missing asset parameter or invalid path
+          content:
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: Release or asset not found
+          content:
+            text/plain:
+              schema:
+                type: string
+        '502':
+          description: Failed to download asset from GitHub
+          content:
+            text/plain:
+              schema:
+                type: string
+
+components:
+  schemas:
+    Tool:
+      type: object
+      properties:
+        tool:
+          type: string
+          description: Name of the tool (e.g., "bun", "node", "pnpm")
+        supported:
+          type: boolean
+          description: Whether the tool is supported
+        label:
+          type: string
+          description: Optional label for the tool version
+      required:
+        - tool
+        - supported
+    
+tags:
+  - name: Baseline
+    description: Generate baseline PNG images
+  - name: Render
+    description: Render React components
+  - name: GitHub
+    description: Download GitHub release assets
+  - name: Static
+    description: Serve static files

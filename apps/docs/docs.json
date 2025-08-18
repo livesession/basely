@@ -23,7 +23,8 @@
                 "light": "#052529"
             },
             "cssTokens": {
-                "--xyd-button-primary-color": "var(--color-text)"
+                "--xyd-button-primary-color": "var(--color-text)",
+                "--xyd-sidebar-item-color--active": "var(--color-text)"
             },
             "search": false,
             "header": {
@@ -62,8 +63,8 @@
                 "page": "docs"
             },
             {
-                "title": "Playground",
-                "page": "playground"
+                "title": "API Reference",
+                "page": "docs/api-reference"
             }
         ],
         "anchors": {
@@ -78,6 +79,31 @@
                     "social": "github"
                 }
             ]
+        },
+        "sidebar": [
+            {
+                "route": "docs",
+                "pages": [
+                    {
+                        "group": "Get Started",
+                        "pages": [
+                            "docs/introduction"
+                        ]
+                    },
+                    {
+                        "group": "Components",
+                        "pages": [
+                            "docs/components/baseline"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "api": {
+        "openapi": {
+            "source": "./openapi.yaml",
+            "route": "docs/api-reference"
         }
     }
 }
