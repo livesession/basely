@@ -18,9 +18,9 @@ import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
 const {
-    dependencies,
-    peerDependencies,
-    devDependencies
+    dependencies = {},
+    peerDependencies = {},
+    devDependencies = {}
 } = require('./package.json', { assert: { type: 'json' } });
 
 const external = [

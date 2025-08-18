@@ -1,10 +1,23 @@
 {
   "name": "@basely/server",
-  "version": "0.0.0",
-  "main": "server.tsx",
+  "version": "0.1.2",
   "type": "module",
+  "main": "dist/server.js",
+  "bin": {
+    "basely-server": "bin/server.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "package.json",
+    "README.md"
+  ],
   "scripts": {
-    "start": "bun run server.tsx"
+    "build": "bun build server.tsx --outdir=dist --minify --target=bun",
+    "dev": "bun run server.tsx"
   },
   "dependencies": {
     "bun": "^1.2.17",

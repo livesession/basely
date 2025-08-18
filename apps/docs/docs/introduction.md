@@ -8,13 +8,18 @@ title: Introduction
 Content Creation Platform for Developers
 :::
 
+:::callout{kind="warning"}
+Warning: Basely is still in very early stage. Works only on specific use cases.
+:::
+
+
 Basely is a free, open-source platform that helps developers create engaging visual content - from images and videos to dynamic assets that make developer processes more engaging.
 
 ## What you can build with Basely?
 
 Basely transforms the way developers create and share content by providing tools to generate various media formats. You can build:
 
-- **Create visual content** - Generate high-quality images, videos, and dynamic assets
+- **Create visual content** - Generate high-quality images, videos, and dynamic assets directely from components
 - **Build engaging experiences** - Create badges, charts, status indicators, and visual elements
 - **Enhance developer workflows** - Make documentation, dashboards, and reports more engaging
 - **Use anywhere** - Works in Node.js, browsers, and serverless environments
@@ -41,33 +46,41 @@ The **Basely Client** is a JavaScript library that provides an interface for:
 
 ### Installation
 
-```bash
-npm install basely
-```
+:::tabs{kind="secondary"}
+1. [Client](type=client)
+    ```bash
+    npm install basely
+    ```
 
-### Basic Usage
+    ### Basic Usage
 
-```javascript
-import basely from 'basely';
+    ```javascript [!scroll]
+    import basely from 'basely';
 
-// Render custom content
-const response = await basely.img(
-  "@xyd-js/components/system",
-  {
-    import: "Baseline",
-    props: {
-      title: "Node.js Support",
-      toolGroups: [
-        [
-          { tool: "bun", supported: true },
-          { tool: "pnpm", supported: true },
-          { tool: "npm", supported: false }
-        ]
-      ]
-    }
-  }
-);
-```
+    // Render custom content
+    const response = await basely.img(
+      "@xyd-js/components/system",
+      {
+        import: "Baseline",
+        props: {
+          title: "Node.js Support",
+          toolGroups: [
+            [
+              { tool: "bun", supported: true },
+              { tool: "pnpm", supported: true },
+              { tool: "npm", supported: false }
+            ]
+          ]
+        }
+      }
+    );
+    ```
+    
+2. [Server](type=server)
+    ```bash
+    bunx @basely/server
+    ```
+:::
 
 ## Next Steps
 

@@ -11,7 +11,7 @@ describe('Basely', () => {
   describe('basely.img()', () => {
     it('should call render with correct parameters', async () => {
       const result = await basely.img(
-        "@xyd-js/components/system",
+        "@basely/components",
         {
           import: "Baseline",
           font: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
@@ -24,7 +24,7 @@ describe('Basely', () => {
                 font-style: normal;
             } 
             `,
-            `${import.meta.env.IMPORT_URL}/@xyd-js/components/dist/index.css`,
+            `${import.meta.env.IMPORT_URL}/@basely/components/dist/index.css`,
           ],
           props: {
             "title": "Node.js Support",

@@ -1,4 +1,10 @@
 xyd-layout-primary {
+    --xyd-button-primary-color: var(--color-text);
+    --xyd-sidebar-item-color--active: var(--color-text);
+    --xyd-toc-item-color--active: var(--color-text);
+    --xyd-anchor-color: var(--color-text);
+    --xyd-anchor-color--hover: var(--color-text);
+
     [part=logo] img {
         width: auto;
         height: auto;
@@ -8,6 +14,16 @@ xyd-layout-primary {
     &:not([data-layout="page"]) {
         xyd-nav [part=logo] img {
             display: none;
+        }
+    }
+
+    xyd-content-decorator {
+        a {
+            text-decoration: underline;
+
+            &:hover {
+                text-decoration-thickness: 2.5px;
+            }
         }
     }
 }

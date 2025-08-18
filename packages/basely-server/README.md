@@ -26,7 +26,7 @@ http://localhost:3000/baseline.png?title=Node.js%20Support&toolGroups=[[{%22tool
 ```
 
 2.
-http://localhost:3000/render?pkg=http://localhost:3344/@xyd-js/components/system&component=Baseline&props={"title":"Node.js Support","toolGroups":[[{"tool":"bun","supported":0},{"tool":"pnpm","supported":0},{"tool":"npm","supported":0}]]}
+http://localhost:3000/render?pkg=http://localhost:3344/@basely/components&component=Baseline&props={"title":"Node.js Support","toolGroups":[[{"tool":"bun","supported":0},{"tool":"pnpm","supported":0},{"tool":"npm","supported":0}]]}
 
 3.
 ```

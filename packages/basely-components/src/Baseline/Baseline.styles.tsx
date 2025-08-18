@@ -1,4 +1,3 @@
-
 import { css } from "@linaria/core";
 
 import checkUrl from "./check.svg"
@@ -15,8 +14,8 @@ export const BaselineHost = css`
 
     --baseline-high-bg: #e6f4ea;
     --baseline-high-engine-bg: #ceead6;
-    --baseline-high-img: url(${logoUrl});
     --baseline-high-check: #099949;
+    --baseline-high-img: url(${logoUrl});
 
     --baseline-bg: var(--baseline-high-bg);
     --baseline-engine-bg: var(--baseline-high-engine-bg);
@@ -25,62 +24,81 @@ export const BaselineHost = css`
 
     --baseline-cross: var(--baseline-limited-cross);
     --feedback-link-icon: var(--icon-primary);
-    background: var(--baseline-bg);
-    border-radius: .25rem;
-    margin: 1rem 0;
-    padding-left: 3.8125rem;
+   
+    display: block;
+    position: relative;
+    
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    details {
+        background: var(--baseline-bg);
+        border-radius: 4px;
+        margin: 16px 0;
+        padding-left: 61px;
+        position: relative;
+        border: 1px solid var(--baseline-engine-bg);
+    }
 
     summary {
-        --chevron-size: 0.6875rem;
-        --chevron-padding-left: 0.75rem;
-        --chevron-padding-right: 1.25rem;
+        --chevron-size: 11px;
+        --chevron-padding-left: 12px;
+        --chevron-padding-right: 20px;
         align-items: center;
-        cursor: pointer;
         display: flex;
         flex-wrap: wrap;
-        gap: .5rem;
+        gap: 8px;
         justify-content: space-between;
-        padding: 1rem 0;
+        padding: 16px 0;
         padding-right: calc(var(--chevron-padding-left) + var(--chevron-size) + var(--chevron-padding-right));
         position: relative;
     }
 
+    [part="overlay"] {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        display: block;
+    }
+
     [part="icon"] {
-        --width: 2.3125rem;
+        --width: 37px;
         background-image: var(--baseline-img);
         background-position: 50%;
         background-repeat: no-repeat;
         background-size: contain;
         display: block;
-        height: 2.25rem;
-        left: calc(-.5rem - var(--width));
+        height: 36px;
+        left: calc(-8px - var(--width));
         position: absolute;
-        top: 1rem;
+        top: 16px;
         width: var(--width);
     }
 
     [part="title"] {
-        font-size: 1rem;
+        font-size: 16px;
         font-weight: 600;
         letter-spacing: 0;
         line-height: 1.5;
         margin: 0;
-        padding: .375rem 0;
+        padding: 6px 0;
     }
 
     [part="compatibility"] {
         display: flex;
         flex-wrap: wrap;
-        gap: .5rem;
+        gap: 8px;
     }
 
     [part="tools"] {
         background: var(--baseline-engine-bg);
-        border-radius: 2rem;
+        border-radius: 32px;
         display: flex;
         flex-wrap: wrap;
-        gap: .5rem;
-        padding: .5rem .625rem;
+        gap: 8px;
+        padding: 8px 10px;
 
         [data-tool] {
             display: flex;
@@ -104,8 +122,8 @@ export const BaselineHost = css`
             background-size: contain;
             content: "";
             display: block;
-            height: 1.25rem;
-            width: 1.25rem;
+            height: 20px;
+            width: 20px;
             background-image: var(--baseline-tool-image);
         }
 
@@ -116,13 +134,12 @@ export const BaselineHost = css`
 
             content: "";
             display: block;
-            height: 1.25rem;
+            height: 20px;
             -webkit-mask-repeat: no-repeat;
             mask-repeat: no-repeat;
             -webkit-mask-size: contain;
             mask-size: contain;
-            width: 1rem;
+            width: 16px;
         }
     }
-
 `;

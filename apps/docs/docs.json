@@ -22,10 +22,6 @@
                 "primary": "#BEFFC4",
                 "light": "#052529"
             },
-            "cssTokens": {
-                "--xyd-button-primary-color": "var(--color-text)",
-                "--xyd-sidebar-item-color--active": "var(--color-text)"
-            },
             "search": false,
             "header": {
                 "externalArrow": true
@@ -104,6 +100,13 @@
         "openapi": {
             "source": "./openapi.yaml",
             "route": "docs/api-reference"
+        }
+    },
+    "engine": {
+        "paths": {
+            "@components/*": [
+                "../../packages/basely-components/src/*"
+            ]
         }
     }
 }

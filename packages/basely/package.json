@@ -1,8 +1,16 @@
 {
   "name": "basely",
-  "version": "0.0.0",
+  "version": "0.1.1",
   "main": "index.ts",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
   "exports": {
     ".": {
       "import": "./index.ts",
@@ -13,17 +21,16 @@
     ".": "./index.ts"
   },
   "scripts": {
-    "test": "vitest",
-    "test:run": "vitest run",
-    "test:ui": "vitest --ui",
-    "build": "tsc",
-    "dev": "vitest --watch"
+    "test:e2e": "vitest",
+    "test:e2e:ci": "vitest run",
+    "build": "tsc"
   },
   "dependencies": {},
   "devDependencies": {
     "@types/node": "^20.0.0",
     "vitest": "^1.0.0",
     "jsdom": "^23.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "dotenv": "^16.4.5"
   }
 } 

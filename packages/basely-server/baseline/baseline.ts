@@ -6,7 +6,7 @@ export async function baseline(
     browser: Browser,
 ) {
     // 1) your fixed bits
-    const pkg = `${process.env.IMPORT_URL}/@xyd-js/components/system`;
+    const pkg = `${process.env.IMPORT_URL}/@basely/components`;
     const component = "Baseline";
 
     // 2) grab props out of the incoming URL
@@ -38,7 +38,7 @@ export async function baseline(
         out.append("font", "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
     }
     if (!cssParam) {
-        out.append("css", `${import.meta.env.IMPORT_URL}/@xyd-js/components/dist/index.css`);
+        out.append("css", `${import.meta.env.IMPORT_URL}/@basely/components/dist/index.css`);
         out.append("css", `
             html {
                 font-family: "Inter", sans-serif;

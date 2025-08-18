@@ -112,7 +112,7 @@ paths:
           required: true
           schema:
             type: string
-            example: "https://esm.sh/@xyd-js/components/system"
+            example: "https://esm.sh/@basely/components"
         - name: component
           in: query
           description: Component name to render 

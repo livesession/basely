@@ -21,7 +21,7 @@ const imageBuffer = await response.arrayBuffer();
 
 // Render a component with props
 const response = await basely.img(
-  "@xyd-js/components/system",
+  "@basely/components",
   {
     import: "Baseline",
     props: {
@@ -49,7 +49,7 @@ const response = await basely.img(
   
   // Render a component
   const response = await basely.img(
-    "@xyd-js/components/system",
+    "@basely/components",
     {
       import: "Baseline",
       props: { title: "Test" }
