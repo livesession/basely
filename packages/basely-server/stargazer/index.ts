@@ -14,7 +14,10 @@ export function route(): Route {
             const repoName = url.searchParams.get("repoName");
             const starCount = url.searchParams.get("starCount") || 50;
             const duration = url.searchParams.get("duration") || 5;
-            const gdpr = url.searchParams.get("duration") || false
+            let gdpr = url.searchParams.get("gdpr") || false
+            if (gdpr === "true" || gdpr === "1") {
+                gdpr = true
+            }
 
             if (!repoOrg || !repoName) {
                 const err = {
