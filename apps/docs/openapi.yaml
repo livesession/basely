@@ -292,6 +292,79 @@ paths:
               schema:
                 type: string
 
+  /stargazer:
+    get:
+      tags:
+        - Stargazer
+      summary: Render GitHub Stargazer video
+      description: |
+        Uses a Remotion composition (`id: "main"`) to render an MP4 video
+        based on a GitHub repository and input props.  
+        **Note:** If `repoOrg` or `repoName` is missing, the server returns a `200` with a JSON error object (per current implementation).
+      parameters:
+        - name: repoOrg
+          in: query
+          description: GitHub organization or user that owns the repo
+          required: true
+          schema:
+            type: string
+          example: livesession
+        - name: repoName
+          in: query
+          description: GitHub repository name
+          required: true
+          schema:
+            type: string
+          example: xyd
+        - name: starCount
+          in: query
+          description: Number of stargazers to include
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 50
+        - name: duration
+          in: query
+          description: Video length in seconds
+          required: false
+          schema:
+            type: number
+            minimum: 1
+            default: 5
+        - name: gdpr
+          in: query
+          description: If `true`, enable GDPR-friendly mode (e.g., anonymization)
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Video rendered successfully (or JSON error object when required parameters are missing).
+          content:
+            video/mp4:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Rendering failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Repository organization / name is required"
+        '500':
+          description: Rendering failed
+          content:
+            text/plain:
+              schema:
+                type: string
+
 components:
   schemas:
     Tool:
@@ -319,3 +392,5 @@ tags:
     description: Download GitHub release assets
   - name: Static
     description: Serve static files
+  - name: Stargazer
+    description: Render MP4 videos of GitHub stargazers

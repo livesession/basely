@@ -1,12 +1,12 @@
 import Bun from "bun";
-import React from "react";
-import puppeteer, { Browser } from "puppeteer";
+import puppeteer, {  } from "puppeteer";
 
 import { serve } from "./serve";
 import { router } from "./router";
 import { route as baselineRoute } from "./baseline/index";
 import { route as renderRoute } from "./render";
 import {route as githubRoute } from "./github";
+import {route as stargazerRouter } from "./stargazer"
 
 import httpImportPlugin from "./httpImportPlugin";
 import { NotFound } from "./NotFound";
@@ -18,12 +18,14 @@ const match = router(
     baselineRoute(browser),
     renderRoute(browser),
     githubRoute(),
+    stargazerRouter()
 )
 
 Bun.plugin(httpImportPlugin);
 
 Bun.serve({
     port: Number(process.env.PORT || 3000),
+     idleTimeout: 60,
     async fetch(req) {
         const url = new URL(req.url);
 
