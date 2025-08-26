@@ -23,8 +23,9 @@ const match = router(
 
 Bun.plugin(httpImportPlugin);
 
+const port = Number(process.env.PORT || 3000)
 Bun.serve({
-    port: Number(process.env.PORT || 3000),
+    port,
      idleTimeout: 60,
     async fetch(req) {
         const url = new URL(req.url);
@@ -43,4 +44,4 @@ Bun.serve({
     },
 });
 
-console.log("[bun] Bun.serve started on port 3000");
+console.log(`[bun] Bun.serve started on port ${port}`);

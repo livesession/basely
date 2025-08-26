@@ -20,4 +20,6 @@ RUN bun build server.tsx --outdir=dist --minify --target=bun
 
 EXPOSE 8080
 # IMPORTANT: your server should read process.env.PORT on platforms like Cloud Run
-CMD ["bun","./dist/server.js"]
+# CMD ["bun","./dist/server.js"]
+
+CMD ["bun", "server.tsx"] # TEMPORARY until bun build works again
